@@ -23,17 +23,23 @@ import java.util.List;
 public class SportsStatsController {
 
     // method to return a JSON Node enriched with necessary information
-    private static JsonNode buildStats(JsonNode teamStats1, JsonNode teamStats2, String matchup){
+    private static JsonNode buildStats(JsonNode teamStats1, JsonNode teamStats2, String matchup, String home, String away){
         // modify
         ObjectNode teamStatObj = (ObjectNode) teamStats1;
         // add match up element -
         teamStatObj.put("matchup", matchup);
+        // enrich with opponent name
+        if (matchup.equals("home team")){
+            teamStatObj.put("opponent", away);
+        } else {
+            teamStatObj.put("opponent", home);
+        }
         // add opponent score
         teamStatObj.put("opponentScore", teamStats2.get("score").asInt());
         // add matchResult
         String matchResult;
         if (teamStats1.get("score").asInt() > teamStats2.get("score").asInt()){
-            matchResult = "Team Win ";
+            matchResult = "Team Win";
         } else {
             matchResult = "Team Loss";
         }
@@ -73,14 +79,16 @@ public class SportsStatsController {
             // Parse response and save it to allTeamStatsArray
             if(matchUpStats.isArray()){
                 for(JsonNode stat: matchUpStats){
+                    String homeTeam = String.valueOf(stat.get("homeTeamName").asText());
+                    String visitTeam = String.valueOf(stat.get("visTeamName").asText());
                     JsonNode homeStats = stat.get("homeStats");
                     JsonNode visStats = stat.get("visStats");
                     // add stats to allTeamStatsArray
                     if (homeStats != null && homeStats.get("teamCode").asInt() == teamId) {
-                        allTeamStatsArray.add(buildStats(homeStats, visStats, "home team"));
+                        allTeamStatsArray.add(buildStats(homeStats, visStats, "home team", homeTeam, visitTeam));
                     }
                     if (visStats != null && visStats.get("teamCode").asInt() == teamId) {
-                        allTeamStatsArray.add(buildStats(visStats, homeStats, "away team"));
+                        allTeamStatsArray.add(buildStats(visStats, homeStats, "away team", visitTeam, homeTeam));
                     }
                 }
             }
