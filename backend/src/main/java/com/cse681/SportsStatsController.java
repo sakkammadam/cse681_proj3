@@ -29,19 +29,15 @@ public class SportsStatsController {
         // add match up element -
         teamStatObj.put("matchup", matchup);
         // enrich with opponent name
-        if (matchup.equals("home team")){
-            teamStatObj.put("opponent", away);
-        } else {
-            teamStatObj.put("opponent", home);
-        }
+        teamStatObj.put("opponent", away);
         // add opponent score
         teamStatObj.put("opponentScore", teamStats2.get("score").asInt());
         // add matchResult
         String matchResult;
         if (teamStats1.get("score").asInt() > teamStats2.get("score").asInt()){
-            matchResult = "Team Win";
+            matchResult = "Win";
         } else {
-            matchResult = "Team Loss";
+            matchResult = "Loss";
         }
         // add match result
         teamStatObj.put("matchResult", matchResult);
@@ -85,10 +81,10 @@ public class SportsStatsController {
                     JsonNode visStats = stat.get("visStats");
                     // add stats to allTeamStatsArray
                     if (homeStats != null && homeStats.get("teamCode").asInt() == teamId) {
-                        allTeamStatsArray.add(buildStats(homeStats, visStats, "home team", homeTeam, visitTeam));
+                        allTeamStatsArray.add(buildStats(homeStats, visStats, "Home", homeTeam, visitTeam));
                     }
                     if (visStats != null && visStats.get("teamCode").asInt() == teamId) {
-                        allTeamStatsArray.add(buildStats(visStats, homeStats, "away team", visitTeam, homeTeam));
+                        allTeamStatsArray.add(buildStats(visStats, homeStats, "Away", visitTeam, homeTeam));
                     }
                 }
             }
